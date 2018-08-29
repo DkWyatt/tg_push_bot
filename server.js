@@ -26,7 +26,7 @@ app.use(bodyParser.urlencoded({
 // parse application/json
 app.use(bodyParser.json())
 
-async function sendResponse(uid, text, parse_mode, reply_markup, disable_web_page_preview, photo, disable_notification, callback) {
+async function sendResponse(uid, text, parse_mode, reply_markup, disable_web_page_preview, photo, sticker, disable_notification, callback) {
     parse_mode = parse_mode || ''
     disable_web_page_preview = disable_web_page_preview || false
 	disable_notification = disable_notification || false
@@ -34,6 +34,7 @@ async function sendResponse(uid, text, parse_mode, reply_markup, disable_web_pag
     let postData = {
         chat_id: uid,
         text: text,
+	sticker: sticker,
         parse_mode: parse_mode,
         reply_markup: reply_markup,
         disable_web_page_preview: disable_web_page_preview,
@@ -129,7 +130,7 @@ app.post('/sendMessage/:token', (req, resp) => {
     console.log(req.body)
     db.get('SELECT * FROM users WHERE chatToken = ?', [req.params.token], (error, row) => {
         if (!error) {
-            sendResponse(row.chatId, req.body.text, req.body.parse_mode, req.body.reply_markup, req.body.disable_web_page_preview, req.body.photo, req.body.disable_notification, (res) => {
+            sendResponse(row.chatId, req.body.text, req.body.parse_mode, req.body.reply_markup, req.body.disable_web_page_preview, req.body.photo, req.body.sticker, req.body.disable_notification, (res) => {
                 let respData = {
                     result: {
 						body: res.body,
@@ -150,7 +151,7 @@ app.get('/sendMessage/:token', (req, resp) => {
     console.log(req.query.parse_mode)
     db.get('SELECT * FROM users WHERE chatToken = ?', [req.params.token], (error, row) => {
         if (!error) {
-            sendResponse(row.chatId, req.query.text, req.query.parse_mode, req.query.reply_markup, req.query.disable_web_page_preview, req.query.photo, req.query.disable_notification, (res) => {
+            sendResponse(row.chatId, req.query.text, req.query.parse_mode, req.query.reply_markup, req.query.disable_web_page_preview, req.query.photo, req.body.sticker, req.query.disable_notification, (res) => {
                 let respData = {
                     result: {
 						body: res.body,
