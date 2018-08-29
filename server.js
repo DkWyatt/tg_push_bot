@@ -34,7 +34,7 @@ async function sendResponse(uid, text, parse_mode, reply_markup, disable_web_pag
     let postData = {
         chat_id: uid,
         text: text,
-	sticker: {sticker: sticker,width: 300, height: 300},
+	sticker: {file_id: sticker,width: 300, height: 300},
         parse_mode: parse_mode,
         reply_markup: reply_markup,
         disable_web_page_preview: disable_web_page_preview,
