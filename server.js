@@ -26,42 +26,38 @@ app.use(bodyParser.urlencoded({
 // parse application/json
 app.use(bodyParser.json())
 
-async function sendResponse(uid, text, parse_mode, reply_markup, disable_web_page_preview, photo, sticker, disable_notification, callback) {
+async function sendResponse(uid, text, sticker, parse_mode, reply_markup, disable_web_page_preview, photo, disable_notification, callback) {
     parse_mode = parse_mode || ''
     disable_web_page_preview = disable_web_page_preview || false
-	disable_notification = disable_notification || false
-    if(sticker) {
-        let method = 'sendSticker'
-        let postData = {
-            chat_id: uid,
-            sticker: sticker,
-            reply_markup: reply_markup,
-            disable_notification: disable_notification
-        }
-        reply_markup = reply_markup || {}
-    }else {
-        let method = 'sendMessage'
-        let postData = {
-            chat_id: uid,
-            text: text,
-            parse_mode: parse_mode,
-            reply_markup: reply_markup,
-            disable_web_page_preview: disable_web_page_preview,
-            disable_notification: disable_notification
-        }
-        reply_markup = reply_markup || {}
-        if (photo) {
-            if (photo.startsWith('https')) {
-                postData.photo = photo
-                method = 'sendPhoto'
-                delete postData.text
-                postData.caption = text
-            } else {
-                postData.text = photo
-            }
-            // postData.caption = text
-        }
+    disable_notification = disable_notification || false
+    
+    let method = 'sendMessage'
+    let postData = {
+        chat_id: uid,
+        text: text,
+        parse_mode: parse_mode,
+        reply_markup: reply_markup,
+        disable_web_page_preview: disable_web_page_preview,
+        disable_notification: disable_notification
     }
+    reply_markup = reply_markup || {}
+    if (photo) {
+        if (photo.startsWith('https')) {
+            postData.photo = photo
+            method = 'sendPhoto'
+            delete postData.text
+            postData.caption = text
+        } else {
+            postData.text = photo
+        }
+        // postData.caption = text
+    }
+    if(sticker) {
+        postData.sticker = sticker
+        method = 'sendSticker'
+        delete postData.text
+    }
+
     
     request.post(config.bot.token + method, {
             json: postData
@@ -115,14 +111,14 @@ app.post('/inlineQuery', (req, resp) => {
 		let hintText = config.ui.startHint
         getUserToken(uid).then(row => {
             if (row) {
-                sendResponse(uid, util.format(hintText, row.chatToken), 'Markdown', undefined, true)
+                sendResponse(uid, util.format(hintText, row.chatToken), undefined, 'Markdown', undefined, true)
                 return Promise.reject(1)
             } else {
                 console.log('not exist', uid)
                 return genUserToken(uid)
             }
         }).then(token => {
-            sendResponse(uid, util.format(hintText, token), 'Markdown', undefined, true)
+            sendResponse(uid, util.format(hintText, token), undefined, 'Markdown', undefined, true)
         }).catch((error) => {
             console.log(error)
         })
@@ -133,7 +129,7 @@ app.post('/inlineQuery', (req, resp) => {
         }).catch(() => {
             sendResponse(uid, config.ui.errorHint)
         })
-    } else if (req.body.message.text && req.body.message.text === '/getChatid') {
+    } else if (req.body.message.text && req.body.message.text === '/getchatid') {
         let uid = req.body.message.chat.id
         sendResponse(uid, uid)
     }
@@ -144,7 +140,7 @@ app.post('/sendMessage/:token', (req, resp) => {
     console.log(req.body)
     db.get('SELECT * FROM users WHERE chatToken = ?', [req.params.token], (error, row) => {
         if (!error) {
-            sendResponse(row.chatId, req.body.text, req.body.parse_mode, req.body.reply_markup, req.body.disable_web_page_preview, req.body.photo, req.body.sticker, req.body.disable_notification, (res) => {
+            sendResponse(row.chatId, req.body.text, req.body.sticker, req.body.parse_mode, req.body.reply_markup, req.body.disable_web_page_preview, req.body.photo, req.body.disable_notification, (res) => {
                 let respData = {
                     result: {
 						body: res.body,
@@ -165,7 +161,7 @@ app.get('/sendMessage/:token', (req, resp) => {
     console.log(req.query.parse_mode)
     db.get('SELECT * FROM users WHERE chatToken = ?', [req.params.token], (error, row) => {
         if (!error) {
-            sendResponse(row.chatId, req.query.text, req.query.parse_mode, req.query.reply_markup, req.query.disable_web_page_preview, req.query.photo, req.body.sticker, req.query.disable_notification, (res) => {
+            sendResponse(row.chatId, req.query.text, req.query.sticker, req.query.parse_mode, req.query.reply_markup, req.query.disable_web_page_preview, req.query.photo, req.query.disable_notification, (res) => {
                 let respData = {
                     result: {
 						body: res.body,
