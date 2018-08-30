@@ -30,28 +30,39 @@ async function sendResponse(uid, text, parse_mode, reply_markup, disable_web_pag
     parse_mode = parse_mode || ''
     disable_web_page_preview = disable_web_page_preview || false
 	disable_notification = disable_notification || false
-    let method = 'sendMessage'
-    let postData = {
-        chat_id: uid,
-        text: text,
-	sticker: {file_id: sticker,width: 300, height: 300},
-        parse_mode: parse_mode,
-        reply_markup: reply_markup,
-        disable_web_page_preview: disable_web_page_preview,
-		disable_notification: disable_notification
+    if(sticker) {
+        let method = 'sendSticker'
+        let postData = {
+            chat_id: uid,
+            sticker: sticker,
+            reply_markup: reply_markup,
+            disable_notification: disable_notification
+        }
+        reply_markup = reply_markup || {}
+    }else {
+        let method = 'sendMessage'
+        let postData = {
+            chat_id: uid,
+            text: text,
+            parse_mode: parse_mode,
+            reply_markup: reply_markup,
+            disable_web_page_preview: disable_web_page_preview,
+            disable_notification: disable_notification
+        }
+        reply_markup = reply_markup || {}
+        if (photo) {
+            if (photo.startsWith('https')) {
+                postData.photo = photo
+                method = 'sendPhoto'
+                delete postData.text
+                postData.caption = text
+            } else {
+                postData.text = photo
+            }
+            // postData.caption = text
+        }
     }
-    reply_markup = reply_markup || {}
-    if (photo) {
-		if (photo.startsWith('https')) {
-			postData.photo = photo
-			method = 'sendPhoto'
-			delete postData.text
-			postData.caption = text
-		} else {
-			postData.text = photo
-		}
-        // postData.caption = text
-    }
+    
     request.post(config.bot.token + method, {
             json: postData
         },
@@ -122,6 +133,9 @@ app.post('/inlineQuery', (req, resp) => {
         }).catch(() => {
             sendResponse(uid, config.ui.errorHint)
         })
+    } else if (req.body.message.text && req.body.message.text === '/getChatid') {
+        let uid = req.body.message.chat.id
+        sendResponse(uid, uid)
     }
     resp.send('hello')
 })
@@ -195,6 +209,6 @@ const httpsServer = https.createServer({
     cert: certificate
 }, app)
 
-httpsServer.listen(443, config.https.domain, () => {
+httpsServer.listen(8443, config.https.domain, () => {
     console.log('listening on port 433')
 })
