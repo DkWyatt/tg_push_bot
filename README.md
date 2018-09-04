@@ -18,6 +18,10 @@ curl -X GET https://tgbot.lbyczf.com/sendMessage/:Token?text=HelloWorld
 
 // using post
 curl -d "text=Helloworld&photo=https%3A%2F%2Fgithub.com%2FFndroid%2Ftg_push_bot%2Fblob%2Fmaster%2Fimgs%2Fphoto_2018-04-21_15-29-55.jpg%3Fraw%3Dtrue" -X POST https://tgbot.lbyczf.com/sendMessage/:Token
+
+//using json
+curl -H "Content-Type: application/json" -d '{"text":"HelloWorld","disable_notification": true }' -X POST https://tgbot.lbyczf.com/sendMessage/:Token
+
 ```
 
 
