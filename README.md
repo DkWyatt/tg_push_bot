@@ -33,6 +33,7 @@ curl -H "Content-Type: application/json" -d '{"text":"HelloWorld","disable_notif
 -|-|-|-
 text|String|True|发送的文字内容
 photo|URL String|False|发送的图片地址，支持HTTPS/HTTP
+sticker|String|False|发送的表情ID，可以通过 [@What's the sticker id?](https://t.me/getStickerId_bot) 获取
 parse_mode|String|False|发送文字内容的样式，可以是Markdown或HTML
 reply_markup|JSON String|False|用于控制消息底下的操作按钮
 disable_web_page_preview|Boolean|False|控制是否展示链接的卡片
@@ -41,6 +42,8 @@ disable_notification|Boolean|False|控制是否发送通知
 > reply_markup可以参考：[Telegram Bot API](https://core.telegram.org/bots/api#sendmessage)
 
 > 当photo存在时，text不必须存在（即可以单独发送图片）
+
+> 当sticker存在时，text和photo将被清除（只发送表情）
 
 ### 隐私相关
 
