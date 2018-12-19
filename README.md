@@ -33,7 +33,7 @@ curl -H "Content-Type: application/json" -d '{"text":"HelloWorld","disable_notif
 -|-|-|-
 text|String|True|发送的文字内容
 photo|URL String|False|发送的图片地址，支持HTTPS/HTTP
-sticker|String|False|发送的表情ID，可以通过 [@What's the sticker id?](https://t.me/getStickerId_bot) 获取
+sticker|String|False|发送的表情ID，可以通过 [@Push Bot](https://t.me/RE_Link_Push_bot) 获取
 parse_mode|String|False|发送文字内容的样式，可以是Markdown或HTML
 reply_markup|JSON String|False|用于控制消息底下的操作按钮
 disable_web_page_preview|Boolean|False|控制是否展示链接的卡片
@@ -50,6 +50,10 @@ disable_notification|Boolean|False|控制是否发送通知
 Bot不会识别和储存任何用户推送的消息，只会将推送消息发送给Telegram服务器。Bot只会记录用户回话ID，此ID是向Telegram推送消息的凭据。
 
 ### 更新日志
+
+#### 2018.12.19
+
+1. 增加StickerID获取和发送功能
 
 #### 2018.04.20
 

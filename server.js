@@ -132,6 +132,10 @@ app.post('/inlineQuery', (req, resp) => {
     } else if (req.body.message.text && req.body.message.text === '/getchatid') {
         let uid = req.body.message.chat.id
         sendResponse(uid, uid)
+    } else if(req.body.message.sticker) {
+        let uid = req.body.message.chat.id
+        let sticker_id = req.body.message.sticker.file_id
+        sendResponse(uid, sticker_id)
     }
     resp.send('hello')
 })
